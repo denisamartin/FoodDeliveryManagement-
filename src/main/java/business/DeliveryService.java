@@ -103,13 +103,10 @@ public class DeliveryService extends Observable implements IDeliveryServiceProce
         assert start > 0 && end > 0;
         StringBuilder s = new StringBuilder();
         s.append("Report: time interval of the orders \n");
-        hmap.entrySet().stream().forEach(entry -> {
-            int hour = entry.getKey().getOrderDate().getHours();
-            if (hour >= start && hour <= end) {
-                s.append(entry.getValue().toString() + " ");
-                s.append(entry.getKey().getOrderDate().toString());
-                s.append("\n");
-            }
+        hmap.entrySet().stream().filter(entry-> entry.getKey().getOrderDate().getHours() >=start &&entry.getKey().getOrderDate().getHours()<=end).forEach(entry -> {
+            s.append(entry.getValue().toString() + " ");
+            s.append(entry.getKey().getOrderDate().toString());
+            s.append("\n");
         });
         FileWriter.write("report.txt", s.toString());
         assert !s.toString().equals("");
@@ -131,10 +128,8 @@ public class DeliveryService extends Observable implements IDeliveryServiceProce
         assert nr > 0;
         StringBuilder s = new StringBuilder();
         s.append("Report: the products ordered more than a specified number of times\n");
-        menu.stream().forEach(menuItem -> {
-            if (menuItem.getNr() > nr) {
-                s.append(menuItem.getTitle() + " " + menuItem.getNr() + "\n");
-            }
+        menu.stream().filter(menuItem -> menuItem.getNr()>nr).forEach(menuItem -> {
+            s.append(menuItem.getTitle() + " " + menuItem.getNr() + "\n");
         });
         FileWriter.write("report.txt", s.toString());
         assert !s.toString().equals("");
@@ -185,12 +180,9 @@ public class DeliveryService extends Observable implements IDeliveryServiceProce
             nr[i] = 0;
         }
         s.append("Report:  the products ordered within a specified day with the number of times they have \n been ordered.\n");
-        hmap.entrySet().stream().forEach(entry -> {
-            String d = formatter.format(entry.getKey().getOrderDate());
-            if (d.equals(day)) {
-                for (MenuItem menuItem : entry.getValue()) {
-                    m.add(menuItem.getTitle());
-                }
+        hmap.entrySet().stream().filter(entry-> formatter.format(entry.getKey().getOrderDate()).equals(day)).forEach(entry->{
+            for (MenuItem menuItem : entry.getValue()) {
+                m.add(menuItem.getTitle());
             }
         });
         List<String> noDup = m.stream().distinct().collect(Collectors.toList());
