@@ -150,12 +150,15 @@ public class DeliveryService extends Observable implements IDeliveryServiceProce
     public void generateReport3(int nr, int val) {
         assert nr > 0 && val > 0;
         StringBuilder s = new StringBuilder();
+        List<String> clients= new ArrayList<>();
         s.append("Report: the clients that have ordered more than a specified number of times and the value \n").append("of the order was higher than a specified amount.\n");
         hmap.entrySet().stream().filter(entry -> entry.getKey().getTotal() > val).forEach(entry -> users.stream().filter(c -> c.getOrders() > nr).forEach(c -> {
-            s.append("\n Client id: " + c.getId());
-            s.append("\n Number of orders: " + c.getOrders());
-            s.append("\n Value: " + entry.getKey().getTotal());
+            clients.add(String.valueOf(c.getId()));
         }));
+       List<String>noDup=  clients.stream().distinct().collect(Collectors.toList());
+       for(String id: noDup){
+           s.append("Client id: "+ id);
+       }
         FileWriter.write("report.txt", s.toString());
         assert !s.toString().equals("");
         assert isWellFormed();
